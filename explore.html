@@ -1,0 +1,1499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Explore-FYNIX</title>
+  <link rel="stylesheet" href="index.css" />
+    <link rel="icon" type="image/png" href="images/logo.png" />
+  <style>
+    /* Your existing styles are preserved... */
+    /* Tracklist Styles */
+    .track-section {
+        background-color: rgba(0, 0, 0, 0.75);
+        padding: 10px;
+        border-radius: 10px;
+        width: 90%;
+        margin: 20px auto 40px;
+        color: #fff;
+        font-family: 'Segoe UI', sans-serif;
+        box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+    }
+
+    .track-section h2 {
+      font-size: 2rem;
+      margin-bottom: 25px;
+      color: #f0c14b;
+    }
+
+    .table-wrapper {
+      transition: margin-right 0.3s ease;
+    }
+
+    .table-wrapper.preview-open {
+      margin-right: 300px; /* width of preview box + spacing */
+    }
+
+    table.tracklist {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(6px);
+      border-radius: 12px;
+      overflow: hidden;
+       cursor: pointer;
+    }
+
+    table.tracklist th,
+    table.tracklist td {
+      padding: 14px 20px;
+      text-align: left;
+    }
+
+    table.tracklist th {
+      background-color: rgba(255, 255, 255, 0.1);
+      color: #ffc107;
+      font-weight: 600;
+    }
+
+    table.tracklist tbody tr:hover {
+      background-color: rgba(255, 255, 255, 0.07);
+      transition: background 0.3s ease;
+    }
+
+    .track-title {
+      display: flex;
+      align-items: center;
+    }
+
+    .track-title img {
+      width: 40px;
+      height: 40px;
+      border-radius: 6px;
+      margin-right: 12px;
+    }
+
+    .track-title div {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .track-title span:first-child {
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .track-title span:last-child {
+      font-size: 0.85rem;
+      color: #ccc;
+    }
+
+    /* Song Preview Box */
+    .song-preview-panel {
+      position: fixed;
+      right: 30px;
+      top: 70%;
+      transform: translateY(-50%);
+      width: 320px;
+      background-color: rgba(20, 20, 20, 0.95);
+      color: white;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+      padding: 20px;
+      text-align: center;
+      display: none;
+      z-index: 999;
+      overflow-y: auto;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .song-preview-panel.show {
+      display: flex;
+    }
+
+    .preview-image-box {
+      width: 100%;
+      margin: 0 auto;
+      border: 3px solid #fff;
+      padding: 10px;
+      box-sizing: border-box;
+    }
+
+    .preview-image-box img {
+      width: 100%;
+      height: auto;
+      border-radius: 10px;
+    }
+
+    .song-preview-panel h3 {
+      margin: 10px 0 5px;
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+
+    .song-preview-panel p {
+      margin: 0;
+      font-size: 0.9rem;
+      color: #bbb;
+    }
+
+    .song-preview-panel audio {
+      width: 100%;
+      margin-top: 14px;
+      border-radius: 8px;
+      outline: none;
+    }
+
+    .preview-bottom-controls {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      margin-top: auto;
+      width: 100%;
+      padding: 12px 0;
+      border-top: 1px solid #444;
+    }
+
+    .preview-bottom-controls button {
+      background: none;
+      border: none;
+      font-size: 2rem;
+      color: #f0c14b;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .preview-bottom-controls button:hover {
+      transform: scale(1.2);
+    }
+
+    .close-preview {
+      position: absolute;
+      top: 10px;
+      right: 14px;
+      font-size: 1.4rem;
+      cursor: pointer;
+      color: #bbb;
+    }
+
+    .close-preview:hover {
+      color: red;
+    }
+
+    .seek-bar-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      max-width: 500px;
+      margin: 20px auto;
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    #seekBar {
+      flex-grow: 1;
+      appearance: none;
+      height: 5px;
+      border-radius: 5px;
+      background: #888;
+      outline: none;
+      cursor: pointer;
+    }
+
+    #seekBar::-webkit-slider-thumb {
+      appearance: none;
+      height: 14px;
+      width: 14px;
+      border-radius: 50%;
+      background: #f0c14b;
+      cursor: pointer;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="stars"></div>
+
+<!-- Navbar -->
+<div class="navbar">
+  <a href="index.html" class="logo">
+    <img src="images/logo.png" alt="Fynix Logo">
+    <span>FYNIX</span>
+  </a>
+  <div class="search-bar-container">
+    <button class="home-btn" onclick="window.location.href='index.html'">🏠</button>
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Search music...">
+      <button onclick="handleSearch()">🔍</button>
+    </div>
+  </div>
+  <div class="empty-space"></div>
+</div>
+  <section class="hero">
+    <h1>🎤 Explore All Songs</h1>
+    <p>Explore the latest and trending tracks!</p>
+  </section>
+
+  <section class="track-section">
+    <h2>All Tracks</h2>
+    <div class="table-wrapper" id="tableWrapper">
+      <table class="tracklist">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Title</th>
+            <th>Album</th>
+            <th>Duration</th>
+          </tr>
+        </thead>
+        <tbody id="trackBody"> 
+       <tr data-id="0">
+    <td>1</td>
+    <td class="track-title">
+      <img src="images/pop1.png" alt="Track 1">
+      <div>
+        <span>Blinding Lights</span>
+        <span>The Weeknd</span>
+      </div>
+    </td>
+    <td>After Hours (2020)</td>
+    <td>3:23</td>
+  </tr>
+
+  <tr data-id="1">
+    <td>2</td>
+    <td class="track-title">
+      <img src="images/pop2.png" alt="Track 2">
+      <div>
+        <span>Pasoori</span>
+        <span>Ali Sethi, Shae Gill</span>
+      </div>
+    </td>
+    <td>Coke Studio Season 14 (2022)</td>
+    <td>3:44</td>
+  </tr>
+
+  <tr data-id="2">
+    <td>3</td>
+    <td class="track-title">
+      <img src="images/pop3.png" alt="Track 3">
+      <div>
+        <span>Raatan Lambiyan</span>
+        <span>Jubin Nautiyal, Asees Kaur</span>
+      </div>
+    </td>
+    <td>Shershaah (Film Soundtrack, 2021)</td>
+    <td>3:53</td>
+  </tr>
+
+  <tr data-id="3">
+    <td>4</td>
+    <td class="track-title">
+      <img src="images/pop4.png" alt="Track 4">
+      <div>
+        <span>Levitating</span>
+        <span>Dua Lipa feat. DaBaby</span>
+      </div>
+    </td>
+    <td>Future Nostalgia (2020)</td>
+    <td>3:27</td>
+  </tr>
+
+  <tr data-id="4">
+    <td>5</td>
+    <td class="track-title">
+      <img src="images/pop5.png" alt="Track 5">
+      <div>
+        <span>As It Was</span>
+        <span>Harry Styles</span>
+      </div>
+    </td>
+    <td>Harry's House (2022)</td>
+    <td>2:43</td>
+  </tr>
+
+  <tr data-id="5">
+    <td>6</td>
+    <td class="track-title">
+      <img src="images/pop6.png" alt="Track 6">
+      <div>
+        <span>Tum Mile (Love Reprise)</span>
+        <span>Javed Ali</span>
+      </div>
+    </td>
+    <td>Tum Mile (Film Soundtrack, 2009)</td>
+    <td>5:03</td>
+  </tr>
+  <tr data-id="6">
+    <td>7</td>
+    <td class="track-title">
+      <img src="images/rap1.png" alt="Track 7">
+      <div>
+        <span>	Godzilla</span>
+        <span>Eminem ft. Juice WRLD</span>
+      </div>
+    </td>
+    <td>Music to Be Murdered By (2020)</td>
+    <td>3:30</td>
+  </tr>
+
+  <tr data-id="7">
+    <td>8</td>
+    <td class="track-title">
+      <img src="images/rap2.png" alt="Track 8">
+      <div>
+        <span>No Cap</span>
+        <span>Kr$na</span>
+      </div>
+    </td>
+    <td>No Cap(single)</td>
+    <td>3:27</td>
+  </tr>
+
+  <tr data-id="8">
+    <td>9</td>
+    <td class="track-title">
+      <img src="images/rap3.png" alt="Track 9">
+      <div>
+        <span>HUMBLE</span>
+        <span>Kendrick Lamar</span>
+      </div>
+    </td>
+    <td>DAMN. (2017)</td>
+    <td>2:57</td>
+  </tr>
+
+  <tr data-id="9">
+    <td>10</td>
+    <td class="track-title">
+      <img src="images/rap4.png" alt="Track 10">
+      <div>
+        <span>Luka Chuppi</span>
+        <span>Seedhe Maut</span>
+      </div>
+    </td>
+    <td>Nayaab (2022)</td>
+    <td>2:21</td>
+  </tr>
+
+  <tr data-id="10">
+    <td>11</td>
+    <td class="track-title">
+      <img src="images/rap5.png" alt="Track 11">
+      <div>
+        <span>Goijro</span>
+        <span>Ikka</span>
+      </div>
+    </td>
+    <td>I (2020) (EP)</td>
+    <td>2:27</td>
+  </tr>
+
+  <tr data-id="11">
+    <td>12</td>
+    <td class="track-title">
+      <img src="images/rap6.png" alt="Track 12">
+      <div>
+        <span>FE!N</span>
+        <span>Travis Scott ft. Playboi Carti</span>
+      </div>
+    </td>
+    <td>Utopia (2023)</td>
+    <td>3:13</td>
+  </tr>
+  <tr data-id="12">
+    <td>13</td>
+    <td class="track-title">
+      <img src="images/love1.png" alt="Track 1">
+      <div>
+        <span>Tum Hi Ho</span>
+        <span>Arijit Singh</span>
+      </div>
+    </td>
+    <td> Aashiqui 2 (2013)</td>
+    <td>4:10</td>
+  </tr>
+
+  <tr data-id="13">
+    <td>14</td>
+    <td class="track-title">
+      <img src="images/love2.png" alt="Track 2">
+      <div>
+        <span>Tera Ban Jaunga</span>
+        <span>Akhil Sachdeva, Tulsi Kumar</span>
+      </div>
+    </td>
+    <td>Kabir Singh (2019)</td>
+    <td>3:56</td>
+  </tr>
+
+  <tr data-id="14">
+    <td>15</td>
+    <td class="track-title">
+      <img src="images/love3.png" alt="Track 3">
+      <div>
+        <span>Pee Loon</span>
+        <span> Mohit Chauhan</span>
+      </div>
+    </td>
+    <td>Once Upon A Time In Mumbaai (2010)</td>
+    <td>5:05</td>
+  </tr>
+
+  <tr data-id="15">
+    <td>16</td>
+    <td class="track-title">
+      <img src="images/love4.png" alt="Track 4">
+      <div>
+        <span>Perfect</span>
+        <span> Ed Sheeran</span>
+      </div>
+    </td>
+    <td>(Divide) (2017)</td>
+    <td>4:23</td>
+  </tr>
+
+  <tr data-id="16">
+    <td>17</td>
+    <td class="track-title">
+      <img src="images/love5.png" alt="Track 5">
+      <div>
+        <span>All of Me</span>
+        <span>John Legend</span>
+      </div>
+    </td>
+    <td> Love in the Future (2013)</td>
+    <td>4:29</td>
+  </tr>
+
+  <tr data-id="17">
+    <td>18</td>
+    <td class="track-title">
+      <img src="images/love6.png" alt="Track 6">
+      <div>
+        <span>Just the Way You Are</span>
+        <span>Bruno Mars</span>
+      </div>
+    </td>
+    <td>Doo-Wops & Hooligans (2010)</td>
+    <td>3:40</td>
+  </tr>
+   <tr data-id="18">
+    <td>19</td>
+    <td class="track-title">
+      <img src="images/sad1.png" alt="Track 1">
+      <div>
+        <span>	Teri Yaadon Se Behtar Hai </span>
+        <span>Mustafa Zahid</span>
+      </div>
+    </td>
+    <td>Blood Money (2012)</td>
+    <td>4:36</td>
+  </tr>
+
+  <tr data-id="19">
+    <td>20</td>
+    <td class="track-title">
+      <img src="images/sad2.png" alt="Track 2">
+      <div>
+        <span>Gunaah</span>
+        <span>Mustafa Zahid</span>
+      </div>
+    </td>
+    <td>Blood Money (2012)</td>
+    <td>4:52</td>
+  </tr>
+
+  <tr data-id="20">
+    <td>21</td>
+    <td class="track-title">
+      <img src="images/sad3.png" alt="Track 3">
+      <div>
+        <span>Tere Bina</span>
+        <span>Mustafa Zahid</span>
+      </div>
+    </td>
+    <td>Blood Money (2012)</td>
+    <td>5:06</td>
+  </tr>
+
+  <tr data-id="21">
+    <td>22</td>
+    <td class="track-title">
+      <img src="images/sad4.png" alt="Track 4">
+      <div>
+        <span>Ceilings</span>
+        <span>Lizzy McAlpine</span>
+      </div>
+    </td>
+    <td>Five Seconds Flat (2023)</td>
+    <td>3:02</td>
+  </tr>
+
+  <tr data-id="22">
+    <td>23</td>
+    <td class="track-title">
+      <img src="images/sad5.png" alt="Track 5">
+      <div>
+        <span>The Archer</span>
+        <span>Taylor Swift</span>
+      </div>
+    </td>
+    <td> Lover (Taylor's Version Re-Release, 2023)</td>
+    <td>3:39</td>
+  </tr>
+
+  <tr data-id="23">
+    <td>24</td>
+    <td class="track-title">
+      <img src="images/sad6.png" alt="Track 6">
+      <div>
+        <span>Hurt Me</span>
+        <span>LÉON</span>
+      </div>
+    </td>
+    <td>Circles (2024)</td>
+    <td>3:50</td>
+  </tr>
+  <tr data-id="24">
+    <td>25</td>
+    <td class="track-title">
+      <img src="images/vibe1.png" alt="Track 1">
+      <div>
+        <span>Pal Pal</span>
+        <span> Afsuic</span>
+      </div>
+    </td>
+    <td>Single (Independent)</td>
+    <td>4:36</td>
+  </tr>
+
+  <tr data-id="25">
+    <td>26</td>
+    <td class="track-title">
+      <img src="images/vibe2.png" alt="Track 2">
+      <div>
+        <span>Maand</span>
+        <span>Anumita Nadesan</span>
+      </div>
+    </td>
+    <td> Single (2022)</td>
+    <td>4:52</td>
+  </tr>
+
+  <tr data-id="26">
+    <td>27</td>
+    <td class="track-title">
+      <img src="images/vibe3.png" alt="Track 3">
+      <div>
+        <span>Ishq</span>
+        <span>Amir Ameer</span>
+      </div>
+    </td>
+    <td> Movie: Ishq</td>
+    <td>5:06</td>
+  </tr>
+
+  <tr data-id="27">
+    <td>28</td>
+    <td class="track-title">
+      <img src="images/vibe4.png" alt="Track 4">
+      <div>
+        <span>Saturn</span>
+        <span>SZA</span>
+      </div>
+    </td>
+    <td> LANA (Deluxe, 2024)</td>
+    <td>3:02</td>
+  </tr>
+
+  <tr data-id="28">
+    <td>29</td>
+    <td class="track-title">
+      <img src="images/vibe5.png" alt="Track 5">
+      <div>
+        <span>Eyes Closed</span>
+        <span>Ed Sheeran</span>
+      </div>
+    </td>
+    <td>  Subtract (–) (2023)</td>
+    <td>3:39</td>
+  </tr>
+
+  <tr data-id="29">
+    <td>30</td>
+    <td class="track-title">
+      <img src="images/vibe6.png" alt="Track 6">
+      <div>
+        <span>Save Your Tears</span>
+        <span>The Weeknd</span>
+      </div>
+    </td>
+    <td>After Hours</td>
+    <td>3:50</td>
+  </tr>
+  <tr data-id="30">
+    <td>31</td>
+    <td class="track-title">
+      <img src="images/party1.png" alt="Track 1">
+      <div>
+        <span>Tauba Tauba</span>
+        <span> Karan Aujla</span>
+      </div>
+    </td>
+    <td>Bad Newz (2024)</td>
+    <td>4:36</td>
+  </tr>
+
+  <tr data-id="31">
+    <td>32</td>
+    <td class="track-title">
+      <img src="images/party2.png" alt="Track 2">
+      <div>
+        <span>Tere Vaaste</span>
+        <span>Romy, Shadab Faridi & Altamash Faridi</span>
+      </div>
+    </td>
+    <td>Zara Hatke Zara Bachke (2023) </td>
+    <td>4:52</td>
+  </tr>
+
+  <tr data-id="32">
+    <td>33</td>
+    <td class="track-title">
+      <img src="images/party3.png" alt="Track 3">
+      <div>
+        <span>Jhoome Jo Pathaan</span>
+        <span> Vishal Dadlani, Arijit Singh, Sukriti Kakkar</span>
+      </div>
+    </td>
+    <td>Pathaan (2023) </td>
+    <td>5:06</td>
+  </tr>
+
+  <tr data-id="33">
+    <td>34</td>
+    <td class="track-title">
+      <img src="images/party4.png" alt="Track 4">
+      <div>
+        <span>Blessings</span>
+        <span>Calvin Harris feat. Clementine Douglas</span>
+      </div>
+    </td>
+    <td>Single (2025)</td>
+    <td>3:02</td>
+  </tr>
+
+  <tr data-id="34">
+    <td>35</td>
+    <td class="track-title">
+      <img src="images/party5.png" alt="Track 5">
+      <div>
+        <span>Tonight</span>
+        <span>PinkPantheress</span>
+      </div>
+    </td>
+    <td>Fancy That (2025)</td>
+    <td>3:39</td>
+  </tr>
+
+  <tr data-id="35">
+    <td>36</td>
+    <td class="track-title">
+      <img src="images/party6.png" alt="Track 6">
+      <div>
+        <span>Laika Party</span>
+        <span>Emmy</span>
+      </div>
+    </td>
+    <td> Single (2025)</td>
+    <td>3:50</td>
+  </tr>
+  <tr data-id="36">
+    <td>37</td>
+    <td class="track-title">
+      <img src="images/krsna1.png" alt="Track 1">
+      <div>
+        <span>Fall Off</span>
+        <span>Kr$na</span>
+      </div>
+    </td>
+    <td> Still Here (2021)</td>
+    <td>2:44</td>
+  </tr>
+
+  <tr data-id="37">
+    <td>38</td>
+    <td class="track-title">
+      <img src="images/krsna2.png" alt="Track 2">
+      <div>
+        <span>Saza-E-Maut</span>
+        <span>Kr$na</span>
+      </div>
+    </td>
+    <td>Time Will Tell (2020)</td>
+    <td>3:02</td>
+  </tr>
+
+  <tr data-id="38">
+    <td>39</td>
+    <td class="track-title">
+      <img src="images/krsna3.png" alt="Track 3">
+      <div>
+        <span>Say My Name</span>
+        <span> Kr$na</span>
+      </div>
+    </td>
+    <td>Still Here (2021) </td>
+    <td>3:01</td>
+  </tr>
+
+  <tr data-id="39">
+    <td>40</td>
+    <td class="track-title">
+      <img src="images/krsna4.png" alt="Track 4">
+      <div>
+        <span>Untitled</span>
+        <span>Kr$na</span>
+      </div>
+    </td>
+    <td>Time Will Tell (2020)</td>
+    <td>2:46</td>
+  </tr>
+
+  <tr data-id="40">
+    <td>41</td>
+    <td class="track-title">
+      <img src="images/krsna5.png" alt="Track 5">
+      <div>
+        <span>No Cap</span>
+        <span>Kr$na</span>
+      </div>
+    </td>
+    <td>Singles / Kalamkaar</td>
+    <td>3:37</td>
+  </tr>
+
+  <tr data-id="41">
+    <td>42</td>
+    <td class="track-title">
+      <img src="images/krsna6.png" alt="Track 6">
+      <div>
+        <span>Living Legend</span>
+        <span>Still Here</span>
+      </div>
+    </td>
+    <td> Single (2025)</td>
+    <td>3:53</td>
+  </tr>
+  <tr data-id="42">
+    <td>43</td>
+    <td class="track-title">
+      <img src="images/arijit1.png" alt="Track 1">
+      <div>
+        <span>Tum Hi Ho</span>
+        <span>Arijit Singh</span>
+      </div>
+    </td>
+    <td>Aashiqui 2 (2013)</td>
+    <td>4:10</td>
+  </tr>
+
+  <tr data-id="43">
+    <td>44</td>
+    <td class="track-title">
+      <img src="images/arijit2.png" alt="Track 2">
+      <div>
+        <span>Channa Mereya</span>
+        <span>Arijit Singh</span>
+      </div>
+    </td>
+    <td> Ae Dil Hai Mushkil (2016)</td>
+    <td>5:45</td>
+  </tr>
+
+  <tr data-id="44">
+    <td>45</td>
+    <td class="track-title">
+      <img src="images/arijit3.png" alt="Track 3">
+      <div>
+        <span>Raabta</span>
+        <span> Arijit Singh</span>
+      </div>
+    </td>
+    <td>Agent Vinod (2012) </td>
+    <td>3:52</td>
+  </tr>
+
+  <tr data-id="45">
+    <td>46</td>
+    <td class="track-title">
+      <img src="images/arijit4.png" alt="Track 4">
+      <div>
+        <span> Agar Tum Saath Ho</span>
+        <span>Arijit Singh</span>
+      </div>
+    </td>
+    <td>Tamasha (2015)</td>
+    <td>5:41</td>
+  </tr>
+
+  <tr data-id="46">
+    <td>47</td>
+    <td class="track-title">
+      <img src="images/arijit5.png" alt="Track 5">
+      <div>
+        <span> Kesariya</span>
+        <span>Arijit Singh</span>
+      </div>
+    </td>
+    <td> Brahmāstra (2022)</td>
+    <td>2:52</td>
+  </tr>
+
+  <tr data-id="47">
+    <td>48</td>
+    <td class="track-title">
+      <img src="images/arijit6.png" alt="Track 6">
+      <div>
+        <span>Shayad</span>
+        <span>Arijit Singh</span>
+      </div>
+    </td>
+    <td>Love Aaj Kal (2020)</td>
+    <td>3:10</td>
+  </tr>
+  <tr data-id="48">
+    <td>49</td>
+    <td class="track-title">
+      <img src="images/masoom1.png" alt="Track 1">
+      <div>
+        <span> 2 Khatole</span>
+        <span>Masoom Sharma</span>
+      </div>
+    </td>
+    <td> Single</td>
+    <td>3:00</td>
+  </tr>
+
+  <tr data-id="49">
+    <td>50</td>
+    <td class="track-title">
+      <img src="images/masoom2.png" alt="Track 2">
+      <div>
+        <span>Gabbar Bhi Nachega</span>
+        <span>Masoom Sharma</span>
+      </div>
+    </td>
+    <td> Single</td>
+    <td>2:43</td>
+  </tr>
+
+  <tr data-id="50">
+    <td>51</td>
+    <td class="track-title">
+      <img src="images/masoom3.png" alt="Track 3">
+      <div>
+        <span>Pistol Bole Gi</span>
+        <span> Masoom Sharma</span>
+      </div>
+    </td>
+    <td> Single </td>
+    <td>2:28</td>
+  </tr>
+
+  <tr data-id="51">
+    <td>52</td>
+    <td class="track-title">
+      <img src="images/masoom4.png" alt="Track 4">
+      <div>
+        <span>Chambal K Dakku</span>
+        <span>Masoom Sharma</span>
+      </div>
+    </td>
+    <td> Single</td>
+    <td>3:49</td>
+  </tr>
+
+  <tr data-id="52">
+    <td>53</td>
+    <td class="track-title">
+      <img src="images/masoom5.png" alt="Track 5">
+      <div>
+        <span>Lofar</span>
+        <span>Masoom Sharma</span>
+      </div>
+    </td>
+    <td> Single</td>
+    <td>2:!6</td>
+  </tr>
+
+  <tr data-id="53">
+    <td>54</td>
+    <td class="track-title">
+      <img src="images/masoom6.png" alt="Track 6">
+      <div>
+        <span> Blender</span>
+        <span>Masoom Sharma</span>
+      </div>
+    </td>
+    <td>  Single</td>
+    <td>3:05</td>
+  </tr>
+  <tr data-id="54">
+    <td>55</td>
+    <td class="track-title">
+      <img src="images/eminem1.png" alt="Track 1">
+      <div>
+        <span>Love The Way You Lie </span>
+        <span>Eminem</span>
+      </div>
+    </td>
+    <td>Recovery (2010)</td>
+    <td>3:00</td>
+  </tr>
+
+  <tr data-id="55">
+    <td>56</td>
+    <td class="track-title">
+      <img src="images/eminem2.png" alt="Track 2">
+      <div>
+        <span>	Without Me</span>
+        <span>Eminem</span>
+      </div>
+    </td>
+    <td>The Eminem Show (2002)</td>
+    <td>2:43</td>
+  </tr>
+
+  <tr data-id="56">
+    <td>57</td>
+    <td class="track-title">
+      <img src="images/eminem3.png" alt="Track 3">
+      <div>
+        <span>Not Afraid</span>
+        <span>Eminem</span>
+      </div>
+    </td>
+    <td>Recovery (2010) </td>
+    <td>2:28</td>
+  </tr>
+
+  <tr data-id="57">
+    <td>58</td>
+    <td class="track-title">
+      <img src="images/eminem4.png" alt="Track 4">
+      <div>
+        <span>Rap God</span>
+        <span>Eminem</span>
+      </div>
+    </td>
+    <td>The Marshall Mathers LP 2 (2013)</td>
+    <td>3:49</td>
+  </tr>
+
+  <tr data-id="58">
+    <td>59</td>
+    <td class="track-title">
+      <img src="images/eminem5.png" alt="Track 5">
+      <div>
+        <span>Smack That</span>
+        <span>Eminem</span>
+      </div>
+    </td>
+    <td>Konvicted (Akon album, 2006)</td>
+    <td>2:!6</td>
+  </tr>
+
+  <tr data-id="59">
+    <td>60</td>
+    <td class="track-title">
+      <img src="images/eminem6.png" alt="Track 6">
+      <div>
+        <span>Mockingbird</span>
+        <span>Eminem</span>
+      </div>
+    </td>
+    <td>Encore (2004)</td>
+    <td>3:05</td>
+  </tr>
+
+  
+
+</tbody>
+   </table>
+    </div>
+  </section>
+
+  <!-- 🎧 Song Preview Panel -->
+  <div class="song-preview-panel" id="previewBox">
+    <div class="close-preview" onclick="closePreview()">✖</div>
+    <div class="preview-image-box">
+      <img id="previewImage" src="" alt="Cover">
+    </div>
+    <h3 id="previewTitle">Song Title</h3>
+    <p id="previewArtist">Artist</p>
+    <audio id="audioPlayer">
+      <source id="audioSource" src="" type="audio/mpeg">
+      Your browser does not support the audio element.
+    </audio>
+    <div class="seek-bar-container">
+      <span id="currentTime">0:00</span>
+      <input type="range" id="seekBar" value="0" min="0">
+      <span id="totalTime">0:00</span>
+    </div>
+    <div class="preview-bottom-controls">
+      <button onclick="prevTrack()">⏪</button>
+      <button onclick="togglePlayPause()" id="playPauseBtn">⏸️</button>
+      <button onclick="nextTrack()">⏩</button>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const tracks = [ {
+          title: "Blinding Lights",
+          artist: "The Weeknd",
+          img: "images/pop1.png",
+          audio: "audio/pop1.mp3"
+        },
+        {
+          title: "Pasoori",
+          artist: "Ali Sethi, Shae Gill",
+          img: "images/pop2.png",
+          audio: "audio/pop2.mp3"
+        },
+        {
+          title: "Raatan Lambiyan",
+          artist: "Jubin Nautiyal, Asees Kaur",
+          img: "images/pop3.png",
+          audio: "audio/pop3.mp3"
+        },
+        {
+          title: "Levitating",
+          artist: "Dua Lipa feat. DaBaby",
+          img: "images/pop4.png",
+          audio: "audio/pop4.mp3"
+        },
+        {
+          title: "As It Was",
+          artist: "Harry Styles",
+          img: "images/pop5.png",
+          audio: "audio/pop5.mp3"
+        },
+        {
+          title: "Tum Mile (Love Reprise)",
+          artist: "Javed Ali",
+          img: "images/pop6.png",
+          audio: "audio/pop6.mp3"
+        },
+        {
+          title: "Godzilla",
+          artist: "Eminem ft. Juice WRLD",
+          img: "images/rap1.png",
+          audio: "audio/rap1.mp3"
+        },
+        {
+          title: "No Cap",
+          artist: "Kr$na",
+          img: "images/rap2.png",
+          audio: "audio/rap2.mp3"
+        },
+        {
+          title: "HUMBLE",
+          artist: "Kendrick Lamar",
+          img: "images/rap3.png",
+          audio: "audio/rap3.mp3"
+        },
+        {
+          title: "Luka Chuppi",
+          artist: "Seedhe Maut",
+          img: "images/rap4.png",
+          audio: "audio/rap4.mp3"
+        },
+        {
+          title: "Goijro",
+          artist: "Ikka",
+          img: "images/rap5.png",
+          audio: "audio/rap5.mp3"
+        },
+        {
+          title: "FE!N",
+          artist: "Travis Scott ft. Playboi Carti",
+          img: "images/rap6.png",
+          audio: "audio/rap6.mp3"
+        },
+        {
+          title: "Tum Hi Ho",
+          artist: "Arijit Singh",
+          img: "images/love1.png",
+          audio: "audio/love1.mp3"
+        },
+        {
+          title: "Tera Ban Jaunga",
+          artist: "Akhil Sachdeva, Tulsi Kumar",
+          img: "images/love2.png",
+          audio: "audio/love2.mp3"
+        },
+        {
+          title: "Pee Loon",
+          artist: "Mohit Chauhan",
+          img: "images/love3.png",
+          audio: "audio/love3.mp3"
+        },
+        {
+          title: "Perfect",
+          artist: " Ed Sheeran",
+          img: "images/love4.png",
+          audio: "audio/love4.mp3"
+        },
+        {
+          title: "All of Me",
+          artist: "John Legend",
+          img: "images/love5.png",
+          audio: "audio/love5.mp3"
+        },
+        {
+          title: "Just the Way You Are",
+          artist: "Bruno Mars",
+          img: "images/love6.png",
+          audio: "audio/love6.mp3"
+        },
+        {
+          title: "Teri Yaadon Se Behtar Hai",
+          artist: "Mustafa Zahid",
+          img: "images/sad1.png",
+          audio: "audio/sad1.mp3"
+        },
+        {
+          title: "Gunaah",
+          artist: "Mustafa Zahid",
+          img: "images/sad2.png",
+          audio: "audio/sad2.mp3"
+        },
+        {
+          title: "Tere Bina",
+          artist: "Mustafa Zahid",
+          img: "images/sad3.png",
+          audio: "audio/sad3.mp3"
+        },
+        {
+          title: "Ceilings",
+          artist: "Lizzy McAlpine",
+          img: "images/sad4.png",
+          audio: "audio/sad4.mp3"
+        },
+        {
+          title: "The Archer",
+          artist: " Taylor Swift",
+          img: "images/sad5.png",
+          audio: "audio/sad5.mp3"
+        },
+        {
+          title: "Hurt Me",
+          artist: "LÉON",
+          img: "images/sad6.png",
+          audio: "audio/sad6.mp3"
+        },
+        {
+          title: "Pal Pal",
+          artist: "Afsuic",
+          img: "images/vibe1.png",
+          audio: "audio/vibe1.mp3"
+        },
+        {
+          title: "Maand",
+          artist: "Anumita Nadesan",
+          img: "images/vibe2.png",
+          audio: "audio/vibe2.mp3"
+        },
+        {
+          title: "Ishq",
+          artist: "Amir Ameer",
+          img: "images/vibe3.png",
+          audio: "audio/vibe3.mp3"
+        },
+        {
+          title: "Saturn",
+          artist: " SZA",
+          img: "images/vibe4.png",
+          audio: "audio/vibe4.mp3"
+        },
+        {
+          title: "Eyes Closed",
+          artist: "Ed Sheeran",
+          img: "images/vibe5.png",
+          audio: "audio/vibe5.mp3"
+        },
+        {
+          title: "Save Your Tears",
+          artist: "The Weeknd",
+          img: "images/vibe6.png",
+          audio: "audio/vibe6.mp3"
+        },
+        {
+          title: "Tauba Tauba",
+          artist: " Karan Aujla",
+          img: "images/party1.png",
+          audio: "audio/party1.mp3"
+        },
+        {
+          title: "Tere Vaaste",
+          artist: "Romy, Shadab Faridi & Altamash Faridi",
+          img: "images/party2.png",
+          audio: "audio/party2.mp3"
+        },
+        {
+          title: "Jhoome Jo Pathaan",
+          artist: "Vishal Dadlani, Arijit Singh, Sukriti Kakkar",
+          img: "images/party3.png",
+          audio: "audio/party3.mp3"
+        },
+        {
+          title: "Blessings",
+          artist: "Calvin Harris feat. Clementine Douglas",
+          img: "images/party4.png",
+          audio: "audio/party4.mp3"
+        },
+        {
+          title: "Tonight",
+          artist: "PinkPantheress",
+          img: "images/party5.png",
+          audio: "audio/party5.mp3"
+        },
+        {
+          title: "Laika Party",
+          artist: "Emmy",
+          img: "images/party6.png",
+          audio: "audio/party6.mp3"
+        },
+        {
+          title: "Fall Off",
+          artist: "Kr$na",
+          img: "images/krsna1.png",
+          audio: "audio/krsna1.mp3"
+        },
+        {
+          title: "Saza-E-Maut",
+          artist: "Kr$na",
+          img: "images/krsna2.png",
+          audio: "audio/krsna2.mp3"
+        },
+        {
+          title: "Say My Name",
+          artist: "Kr$na",
+          img: "images/krsna3.png",
+          audio: "audio/krsna3.mp3"
+        },
+        {
+          title: "Untitled",
+          artist: "Kr$na",
+          img: "images/krsna4.png",
+          audio: "audio/krsna4.mp3"
+        },
+        {
+          title: "No Cap",
+          artist: "Kr$na",
+          img: "images/krsna5.png",
+          audio: "audio/krsna5.mp3"
+        },
+        {
+          title: "Living Legend",
+          artist: "Kr$na",
+          img: "images/krsna6.png",
+          audio: "audio/krsna6.mp3"
+        },
+        {
+          title: "Tum Hi Ho",
+          artist: "Arijit Singh",
+          img: "images/arijit1.png",
+          audio: "audio/arijit1.mp3"
+        },
+        {
+          title: "Channa Mereya",
+          artist: "Arijit Singh",
+          img: "images/arijit2.png",
+          audio: "audio/arijit2.mp3"
+        },
+        {
+          title: "Raabta",
+          artist: "Arijit Singh",
+          img: "images/arijit3.png",
+          audio: "audio/arijit3.mp3"
+        },
+        {
+          title: " Agar tum saath hoo",
+          artist: "Arijit Singh",
+          img: "images/arijit4.png",
+          audio: "audio/arijit4.mp3"
+        },
+        {
+          title: "Kesariya",
+          artist: "Arijit Singh",
+          img: "images/arijit5.png",
+          audio: "audio/arijit5.mp3"
+        },
+        {
+          title: "Shayad ",
+          artist: "Arijit Singh",
+          img: "images/arijit6.png",
+          audio: "audio/arijit6.mp3"
+        },
+        {
+          title: "2 Khatole",
+          artist: "Masoom Sharma",
+          img: "images/masoom1.png",
+          audio: "audio/masoom1.mp3"
+        },
+        {
+          title: " Gabbar Bhi Nachega",
+          artist: "Masoom Sharma",
+          img: "images/masoom2.png",
+          audio: "audio/masoom2.mp3"
+        },
+        {
+          title: "Pistol Bole Gi",
+          artist: "Masoom Sharma",
+          img: "images/masoom3.png",
+          audio: "audio/masoom3.mp3"
+        },
+        {
+          title: "Chambal K Dakku",
+          artist: "Masoom Sharma",
+          img: "images/masoom4.png",
+          audio: "audio/masoom4.mp3"
+        },
+        {
+          title: "Lofar",
+          artist: "Masoom Sharma",
+          img: "images/masoom5.png",
+          audio: "audio/masoom5.mp3"
+        },
+        {
+          title: "Blender",
+          artist: "Masoom Sharma",
+          img: "images/masoom6.png",
+          audio: "audio/masoom6.mp3"
+        },
+        {
+          title: "Love The Way You Lie",
+          artist: "Eminem",
+          img: "images/eminem1.png",
+          audio: "audio/eminem1.mp3"
+        },
+        {
+          title: " Without Me",
+          artist: "Eminem",
+          img: "images/eminem2.png",
+          audio: "audio/eminem2.mp3"
+        },
+        {
+          title: "Not Afraid",
+          artist: "Eminem",
+          img: "images/eminem3.png",
+          audio: "audio/eminem3.mp3"
+        },
+        {
+          title: "Rap God",
+          artist: "Eminem",
+          img: "images/eminem4.png",
+          audio: "audio/eminem4.mp3"
+        },
+        {
+          title: "Smack That ",
+          artist: "Eminem",
+          img: "images/eminem5.png",
+          audio: "audio/eminem5.mp3"
+        },
+        {
+          title: "Mockingbird",
+          artist: "Eminem",
+          img: "images/eminem6.png",
+          audio: "audio/eminem6.mp3"
+        } ];
+
+      let currentTrack = 0;
+
+      function showPreview(index) {
+        currentTrack = index;
+        const track = tracks[index];
+        document.getElementById("previewImage").src = track.img;
+        document.getElementById("previewTitle").textContent = track.title;
+        document.getElementById("previewArtist").textContent = track.artist;
+        document.getElementById("audioSource").src = track.audio;
+        document.getElementById("audioPlayer").load();
+        document.getElementById("previewBox").classList.add("show");
+        document.getElementById("tableWrapper").classList.add("preview-open");
+      }
+
+      function closePreview() {
+        document.getElementById("previewBox").classList.remove("show");
+        document.getElementById("audioPlayer").pause();
+        document.getElementById("tableWrapper").classList.remove("preview-open");
+      }
+
+      function nextTrack() {
+        currentTrack = (currentTrack + 1) % tracks.length;
+        showPreview(currentTrack);
+      }
+
+      function prevTrack() {
+        currentTrack = (currentTrack - 1 + tracks.length) % tracks.length;
+        showPreview(currentTrack);
+      }
+
+      function togglePlayPause() {
+        const audio = document.getElementById("audioPlayer");
+        const playPauseBtn = document.getElementById("playPauseBtn");
+        if (audio.paused) {
+          audio.play();
+          playPauseBtn.textContent = "⏸️";
+        } else {
+          audio.pause();
+          playPauseBtn.textContent = "▶️";
+        }
+      }
+
+      // Seekbar Logic
+      const audio = document.getElementById("audioPlayer");
+      const seekBar = document.getElementById("seekBar");
+      const currentTimeEl = document.getElementById("currentTime");
+      const totalTimeEl = document.getElementById("totalTime");
+
+      audio.addEventListener("loadedmetadata", () => {
+        seekBar.max = audio.duration;
+        totalTimeEl.textContent = formatTime(audio.duration);
+      });
+
+      audio.addEventListener("timeupdate", () => {
+        seekBar.value = audio.currentTime;
+        currentTimeEl.textContent = formatTime(audio.currentTime);
+      });
+
+      seekBar.addEventListener("input", () => {
+        audio.currentTime = seekBar.value;
+      });
+
+      function formatTime(time) {
+        const minutes = Math.floor(time / 60);
+        const seconds = Math.floor(time % 60).toString().padStart(2, "0");
+        return `${minutes}:${seconds}`;
+      }
+
+      window.closePreview = closePreview;
+      window.nextTrack = nextTrack;
+      window.prevTrack = prevTrack;
+      window.togglePlayPause = togglePlayPause;
+
+      document.querySelectorAll("#trackBody tr").forEach(row => {
+        row.addEventListener("click", () => {
+          const id = parseInt(row.getAttribute("data-id"));
+          showPreview(id);
+        });
+      });
+    });
+  </script>
+</body>
+</html>

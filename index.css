@@ -1,0 +1,436 @@
+/* Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: white;
+  background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+  background-size: 300% 300%;
+  animation: pulseDark 10s ease infinite;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* Galaxy Stars Background */
+.stars {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background: url('images/back.png');
+  animation: starsMove 200s linear infinite;
+  z-index: 0;
+  opacity: 0.20;
+  pointer-events: none;
+}
+
+@keyframes starsMove {
+  0% { background-position: 0 0; }
+  100% { background-position: -5000px 5000px; }
+}
+
+/* Background Animation */
+@keyframes pulseDark {
+  0% {
+    background-position: 0% 50%;
+    filter: brightness(1);
+  }
+  50% {
+    background-position: 100% 50%;
+    filter: brightness(1.1);
+  }
+  100% {
+    background-position: 0% 50%;
+    filter: brightness(1);
+  }
+}
+
+/* Navbar */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(20, 20, 30, 0.7); /* Dark glassy */
+  backdrop-filter: blur(50px);        /* Soft blur effect */
+  padding: 15px 30px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+  position: relative;
+  z-index: 10; /* Make sure it's above stars & shapes */
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo img {
+  height: 60px;
+  max-height: 70px;
+  transition: 0.3s;
+}
+
+.logo span {
+  font-size: 26px;
+  font-weight: bold;
+  color: #ffd369;
+}
+/* Home button + search bar container */
+.search-bar-container {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  justify-content: center;
+  gap: 10px;
+}
+
+/* Home button */
+.home-btn {
+  background-color: #e49300;
+  color: black;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 18px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.home-btn:hover {
+  background-color: #ffad1f;
+}
+
+/* Search Box */
+.search-box {
+  display: flex;
+  align-items: center;
+  width: 60%;
+}
+
+.search-box input {
+  padding: 10px 16px;
+  width: 100%;
+  border-radius: 20px 0 0 20px;
+  border: none;
+  outline: none;
+  font-size: 16px;
+}
+
+.search-box button {
+  padding: 10px 16px;
+  border-radius: 0 20px 20px 0;
+  border: none;
+  background-color: #e49300;
+  color: black;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.search-box button:hover {
+  background-color: #ffad1f;
+}
+/* Right empty div for layout balance */
+.empty-space {
+  width: 60px;
+}
+
+/* Hero Section */
+.hero {
+  text-align: center;
+  padding: 60px 20px;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), transparent);
+  z-index: 2;
+  position: relative;
+}
+
+.hero h1 {
+  font-size: 48px;
+  margin-bottom: 10px;
+  color: #ffd369;
+  text-shadow: 1px 1px 10px black;
+}
+
+.hero h1 span {
+  color: #fba92c;
+}
+
+.hero p {
+  font-size: 18px;
+  margin-bottom: 25px;
+  color: #ccc;
+}
+
+.hero button {
+  padding: 12px 28px;
+  font-size: 16px;
+  background-color: #fba92c;
+  color: black;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.hero button:hover {
+  background-color: #e49300;
+}
+
+/* Categories Section */
+.categories {
+  padding: 60px 30px;
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(8px);
+  border-radius: 20px;
+  margin: 50px 20px;
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.4);
+  z-index: 2;
+  position: relative;
+}
+
+.categories h2 {
+  margin-bottom: 20px;
+  font-size: 32px;
+  text-align: center;
+  color: #ffd369;
+}
+
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 25px;
+  justify-items: center;
+  margin-top: 30px;
+}
+.category-card {
+  position: relative;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 20px;
+  width: 160px;
+  height: 160px;
+  overflow: hidden;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+  display: flex;
+  align-items: flex-end; /* shift text to bottom */
+  justify-content: center;
+  transition: transform 0.3s ease;
+}
+
+/* Blur overlay for text readability */
+.category-card::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 50px;
+  background: rgba(0, 0, 0, 0.5); /* semi-transparent black */
+  backdrop-filter: blur(4px);
+  z-index: 1;
+}
+
+/* Text styling */
+.category-card span {
+  position: relative;
+  z-index: 2;
+  font-size: 18px;
+  font-weight: 600;
+  color: #ffd369;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  padding: 10px;
+  text-align: center;
+  width: 100%;
+}
+/* Individual category background PNGs */
+.category-card:nth-child(1) {
+  background-image: url('images/pop.png');
+}
+
+.category-card:nth-child(2) {
+  background-image: url('images/rap.png');
+}
+
+.category-card:nth-child(3) {
+  background-image: url('images/love.png');
+}
+
+.category-card:nth-child(4) {
+  background-image: url('images/sad.png');
+}
+
+.category-card:nth-child(5) {
+  background-image: url('images/vibe.png');
+}
+
+.category-card:nth-child(6) {
+  background-image: url('images/party.png');
+}
+
+
+.category-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 25px #fba92c80;
+  filter: brightness(1.1); /* Image remains intact with glow */
+}
+
+/* Music Cards */
+.recommend {
+  padding: 60px 30px;
+  z-index: 2;
+  position: relative;
+}
+
+.recommend h2 {
+  margin-bottom: 20px;
+  font-size: 28px;
+  color: #ffd369;
+}
+
+.music-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 25px;
+  margin-top: 30px;
+}
+
+.music-card {
+  background: #1f1f1f;
+  border-radius: 16px;
+  overflow: hidden;
+  text-align: center;
+  transition: transform 0.3s ease;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+}
+
+.music-card:hover {
+  transform: scale(1.05);
+}
+
+.music-card img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+}
+
+.music-card p {
+  font-size: 18px;
+  padding: 14px 10px;
+  font-weight: 600;
+  color: #ffd369;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* 🔥 Full Mobile Responsive Enhancements */
+@media (max-width: 768px) {
+
+  /* Navbar becomes stacked and centered */
+  .navbar {
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 20px;
+  }
+
+  .logo {
+    justify-content: center;
+  }
+
+  .logo img {
+    height: 50px;
+  }
+
+  .logo span {
+    font-size: 22px;
+  }
+
+  /* Home button and search bar stacked vertically */
+  .search-bar-container {
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    align-items: center;
+  }
+
+  .home-btn {
+    font-size: 16px;
+    padding: 8px 12px;
+  }
+
+  .search-box {
+    width: 90%;
+  }
+
+  .search-box input {
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  .search-box button {
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  .empty-space {
+    display: none;
+  }
+
+  /* Hero text scaling */
+  .hero {
+    padding: 40px 15px;
+  }
+
+  .hero h1 {
+    font-size: 28px;
+  }
+
+  .hero p {
+    font-size: 15px;
+  }
+
+  .hero button {
+    padding: 10px 22px;
+    font-size: 14px;
+  }
+
+  /* Categories */
+  .categories {
+    padding: 40px 15px;
+    margin: 30px 10px;
+  }
+
+  .categories h2 {
+    font-size: 24px;
+  }
+
+  .category-card {
+    width: 130px;
+    height: 130px;
+    font-size: 16px;
+    padding: 20px;
+  }
+
+  /* Music Cards */
+  .recommend {
+    padding: 40px 15px;
+  }
+
+  .recommend h2 {
+    font-size: 22px;
+  }
+
+  .music-card {
+    min-width: 160px;
+  }
+
+  .music-card img {
+    height: 140px;
+  }
+
+  .music-card p {
+    font-size: 14px;
+  }
+}

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Fynix - Music for the Soul</title>
+  <link rel="stylesheet" href="index.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="icon" type="image/png" href="images/logo.png" />
+  <script defer src="index.js"></script>
+</head>
+<body>
+
+  <div class="stars"></div>
+<header class="navbar">
+  <a href="index.html" class="logo">
+    <img src="images/logo.png" alt="Fynix Logo">
+    <span>FYNIX</span>
+  </a>
+
+ <div class="search-bar-container">
+    <button class="home-btn" onclick="window.location.href='index.html'">🏠</button>
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Search music...">
+   <button onclick="handleSearch()">🔍</button>
+    </div>
+  </div>
+</header>
+  <main>
+    <section class="hero">
+      <h1>Feel the Beat with <span>Fynix</span></h1>
+      <p>Your new destination for colorful rhythms and passionate tunes.</p>
+      <button onclick="exploreNow()">Explore Now</button>
+    </section>
+
+    <section class="categories">
+  <h2>Browse Categories</h2>
+  <div class="category-grid">
+    <a href="pop.html" class="category-card"><span>🎤 POP</span></a>
+    <a href="rap.html" class="category-card"><span>🧢 RAP</span></a>
+    <a href="love.html" class="category-card"><span>💖 LOVE</span></a>
+    <a href="sad.html" class="category-card"><span>😢 SAD</span></a>
+    <a href="vibe.html" class="category-card"><span>🌀 VIBE</span></a>
+    <a href="party.html" class="category-card"><span>🎉 PARTY</span></a>
+  </div>
+</section>
+
+    <section class="recommend">
+  <h2>Top Artists for You</h2>
+  <div class="music-cards">
+   <div class="music-card" onclick="window.location.href='krsna.html'">
+      <img src="images/track1.png" alt="Track 1" />
+      <p>KR$NA</p>
+    </div>
+    <div class="music-card" onclick="window.location.href='arijit.html'">
+      <img src="images/track2.png" alt="Track 2" />
+      <p>ARIJIT SINGH</p>
+    </div>
+   <div class="music-card" onclick="window.location.href='masoom.html'">
+      <img src="images/track3.png" alt="Track 3" />
+      <p>MASOOM SHARMA</p>
+    </div>
+   <div class="music-card" onclick="window.location.href='eminem.html'">
+      <img src="images/track4.png" alt="Track 4" />
+      <p>EMINEM </p>
+    </div>
+  </div>
+</section>
+  </main>
+</body>
+</html>

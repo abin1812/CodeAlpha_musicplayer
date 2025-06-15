@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RAP - FYNIX</title>
+  <link rel="stylesheet" href="index.css" />
+    <link rel="icon" type="image/png" href="images/logo.png" />
+  <style>
+    /* Your existing styles are preserved... */
+    /* Tracklist Styles */
+    .track-section {
+        background-color: rgba(0, 0, 0, 0.75);
+        padding: 10px;
+        border-radius: 10px;
+        width: 90%;
+        margin: 20px auto 40px;
+        color: #fff;
+        font-family: 'Segoe UI', sans-serif;
+        box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+    }
+
+    .track-section h2 {
+      font-size: 2rem;
+      margin-bottom: 25px;
+      color: #f0c14b;
+    }
+
+    .table-wrapper {
+      transition: margin-right 0.3s ease;
+    }
+
+    .table-wrapper.preview-open {
+      margin-right: 300px; /* width of preview box + spacing */
+    }
+
+    table.tracklist {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(6px);
+      border-radius: 12px;
+      overflow: hidden;
+       cursor: pointer;
+    }
+
+    table.tracklist th,
+    table.tracklist td {
+      padding: 14px 20px;
+      text-align: left;
+    }
+
+    table.tracklist th {
+      background-color: rgba(255, 255, 255, 0.1);
+      color: #ffc107;
+      font-weight: 600;
+    }
+
+    table.tracklist tbody tr:hover {
+      background-color: rgba(255, 255, 255, 0.07);
+      transition: background 0.3s ease;
+    }
+
+    .track-title {
+      display: flex;
+      align-items: center;
+    }
+
+    .track-title img {
+      width: 40px;
+      height: 40px;
+      border-radius: 6px;
+      margin-right: 12px;
+    }
+
+    .track-title div {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .track-title span:first-child {
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .track-title span:last-child {
+      font-size: 0.85rem;
+      color: #ccc;
+    }
+
+    /* Song Preview Box */
+    .song-preview-panel {
+      position: fixed;
+      right: 30px;
+      top: 70%;
+      transform: translateY(-50%);
+      width: 320px;
+      background-color: rgba(20, 20, 20, 0.95);
+      color: white;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+      padding: 20px;
+      text-align: center;
+      display: none;
+      z-index: 999;
+      overflow-y: auto;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .song-preview-panel.show {
+      display: flex;
+    }
+
+    .preview-image-box {
+      width: 90%;
+      margin: 0 auto;
+      border: 3px solid #fff;
+      padding: 10px;
+      box-sizing: border-box;
+    }
+
+    .preview-image-box img {
+      width: 100%;
+      height: auto;
+      border-radius: 10px;
+    }
+
+    .song-preview-panel h3 {
+      margin: 10px 0 5px;
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+
+    .song-preview-panel p {
+      margin: 0;
+      font-size: 0.9rem;
+      color: #bbb;
+    }
+
+    .song-preview-panel audio {
+      width: 100%;
+      margin-top: 14px;
+      border-radius: 8px;
+      outline: none;
+    }
+
+    .preview-bottom-controls {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      margin-top: auto;
+      width: 100%;
+      padding: 12px 0;
+      border-top: 1px solid #444;
+    }
+
+    .preview-bottom-controls button {
+      background: none;
+      border: none;
+      font-size: 2rem;
+      color: #f0c14b;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .preview-bottom-controls button:hover {
+      transform: scale(1.2);
+    }
+
+    .close-preview {
+      position: absolute;
+      top: 10px;
+      right: 14px;
+      font-size: 1.4rem;
+      cursor: pointer;
+      color: #bbb;
+    }
+
+    .close-preview:hover {
+      color: red;
+    }
+
+    .seek-bar-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      max-width: 500px;
+      margin: 20px auto;
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    #seekBar {
+      flex-grow: 1;
+      appearance: none;
+      height: 5px;
+      border-radius: 5px;
+      background: #888;
+      outline: none;
+      cursor: pointer;
+    }
+
+    #seekBar::-webkit-slider-thumb {
+      appearance: none;
+      height: 14px;
+      width: 14px;
+      border-radius: 50%;
+      background: #f0c14b;
+      cursor: pointer;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+ <div class="stars"></div>
+
+<!-- Navbar -->
+<div class="navbar">
+  <a href="index.html" class="logo">
+    <img src="images/logo.png" alt="Fynix Logo">
+    <span>FYNIX</span>
+  </a>
+  <div class="search-bar-container">
+    <button class="home-btn" onclick="window.location.href='index.html'">🏠</button>
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Search music...">
+      <button onclick="handleSearch()">🔍</button>
+    </div>
+  </div>
+  <div class="empty-space"></div>
+</div>
+
+  <section class="hero">
+    <h1>🎤 RAP Songs</h1>
+    <p>Explore the latest and trending RAP tracks!</p>
+  </section>
+
+  <section class="track-section">
+    <h2>Top RAP Tracks</h2>
+    <div class="table-wrapper" id="tableWrapper">
+      <table class="tracklist">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Title</th>
+            <th>Album</th>
+            <th>Duration</th>
+          </tr>
+        </thead>
+        <tbody id="trackBody"> 
+       <tr data-id="0">
+    <td>1</td>
+    <td class="track-title">
+      <img src="images/rap1.png" alt="Track 1">
+      <div>
+        <span>	Godzilla</span>
+        <span>Eminem ft. Juice WRLD</span>
+      </div>
+    </td>
+    <td>Music to Be Murdered By (2020)</td>
+    <td>3:30</td>
+  </tr>
+
+  <tr data-id="1">
+    <td>2</td>
+    <td class="track-title">
+      <img src="images/rap2.png" alt="Track 2">
+      <div>
+        <span>No Cap</span>
+        <span>Kr$na</span>
+      </div>
+    </td>
+    <td>No Cap(single)</td>
+    <td>3:27</td>
+  </tr>
+
+  <tr data-id="2">
+    <td>3</td>
+    <td class="track-title">
+      <img src="images/rap3.png" alt="Track 3">
+      <div>
+        <span>HUMBLE</span>
+        <span>Kendrick Lamar</span>
+      </div>
+    </td>
+    <td>DAMN. (2017)</td>
+    <td>2:57</td>
+  </tr>
+
+  <tr data-id="3">
+    <td>4</td>
+    <td class="track-title">
+      <img src="images/rap4.png" alt="Track 4">
+      <div>
+        <span>Luka Chuppi</span>
+        <span>Seedhe Maut</span>
+      </div>
+    </td>
+    <td>Nayaab (2022)</td>
+    <td>2:21</td>
+  </tr>
+
+  <tr data-id="4">
+    <td>5</td>
+    <td class="track-title">
+      <img src="images/rap5.png" alt="Track 5">
+      <div>
+        <span>Goijro</span>
+        <span>Ikka</span>
+      </div>
+    </td>
+    <td>I (2020) (EP)</td>
+    <td>2:27</td>
+  </tr>
+
+  <tr data-id="5">
+    <td>6</td>
+    <td class="track-title">
+      <img src="images/rap6.png" alt="Track 6">
+      <div>
+        <span>FE!N</span>
+        <span>Travis Scott ft. Playboi Carti</span>
+      </div>
+    </td>
+    <td>Utopia (2023)</td>
+    <td>3:13</td>
+  </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 🎧 Song Preview Panel -->
+  <div class="song-preview-panel" id="previewBox">
+    <div class="close-preview" onclick="closePreview()">✖</div>
+    <div class="preview-image-box">
+      <img id="previewImage" src="" alt="Cover">
+    </div>
+    <h3 id="previewTitle">Song Title</h3>
+    <p id="previewArtist">Artist</p>
+    <audio id="audioPlayer">
+      <source id="audioSource" src="" type="audio/mpeg">
+      Your browser does not support the audio element.
+    </audio>
+    <div class="seek-bar-container">
+      <span id="currentTime">0:00</span>
+      <input type="range" id="seekBar" value="0" min="0">
+      <span id="totalTime">0:00</span>
+    </div>
+    <div class="preview-bottom-controls">
+      <button onclick="prevTrack()">⏪</button>
+      <button onclick="togglePlayPause()" id="playPauseBtn">⏸️</button>
+      <button onclick="nextTrack()">⏩</button>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const tracks = [ {
+          title: "Godzilla",
+          artist: "Eminem ft. Juice WRLD",
+          img: "images/rap1.png",
+          audio: "audio/rap1.mp3"
+        },
+        {
+          title: "No Cap",
+          artist: "KR$NA",
+          img: "images/rap2.png",
+          audio: "audio/rap2.mp3"
+        },
+        {
+          title: "HUMBLE.",
+          artist: "Kendrick Lamar",
+          img: "images/rap3.png",
+          audio: "audio/rap3.mp3"
+        },
+        {
+          title: "Luka Chuppi",
+          artist: "Seedhe Maut",
+          img: "images/rap4.png",
+          audio: "audio/rap4.mp3"
+        },
+        {
+          title: "Goijro",
+          artist: "Ikka",
+          img: "images/rap5.png",
+          audio: "audio/rap5.mp3"
+        },
+        {
+          title: "FE!N",
+          artist: "Travis Scott ft. Playboi Carti",
+          img: "images/rap6.png",
+          audio: "audio/rap6.mp3"
+        }];
+
+      let currentTrack = 0;
+
+      function showPreview(index) {
+        currentTrack = index;
+        const track = tracks[index];
+        document.getElementById("previewImage").src = track.img;
+        document.getElementById("previewTitle").textContent = track.title;
+        document.getElementById("previewArtist").textContent = track.artist;
+        document.getElementById("audioSource").src = track.audio;
+        document.getElementById("audioPlayer").load();
+        document.getElementById("previewBox").classList.add("show");
+        document.getElementById("tableWrapper").classList.add("preview-open");
+      }
+
+      function closePreview() {
+        document.getElementById("previewBox").classList.remove("show");
+        document.getElementById("audioPlayer").pause();
+        document.getElementById("tableWrapper").classList.remove("preview-open");
+      }
+
+      function nextTrack() {
+        currentTrack = (currentTrack + 1) % tracks.length;
+        showPreview(currentTrack);
+      }
+
+      function prevTrack() {
+        currentTrack = (currentTrack - 1 + tracks.length) % tracks.length;
+        showPreview(currentTrack);
+      }
+
+      function togglePlayPause() {
+        const audio = document.getElementById("audioPlayer");
+        const playPauseBtn = document.getElementById("playPauseBtn");
+        if (audio.paused) {
+          audio.play();
+          playPauseBtn.textContent = "⏸️";
+        } else {
+          audio.pause();
+          playPauseBtn.textContent = "▶️";
+        }
+      }
+
+      // Seekbar Logic
+      const audio = document.getElementById("audioPlayer");
+      const seekBar = document.getElementById("seekBar");
+      const currentTimeEl = document.getElementById("currentTime");
+      const totalTimeEl = document.getElementById("totalTime");
+
+      audio.addEventListener("loadedmetadata", () => {
+        seekBar.max = audio.duration;
+        totalTimeEl.textContent = formatTime(audio.duration);
+      });
+
+      audio.addEventListener("timeupdate", () => {
+        seekBar.value = audio.currentTime;
+        currentTimeEl.textContent = formatTime(audio.currentTime);
+      });
+
+      seekBar.addEventListener("input", () => {
+        audio.currentTime = seekBar.value;
+      });
+
+      function formatTime(time) {
+        const minutes = Math.floor(time / 60);
+        const seconds = Math.floor(time % 60).toString().padStart(2, "0");
+        return `${minutes}:${seconds}`;
+      }
+
+      window.closePreview = closePreview;
+      window.nextTrack = nextTrack;
+      window.prevTrack = prevTrack;
+      window.togglePlayPause = togglePlayPause;
+
+      document.querySelectorAll("#trackBody tr").forEach(row => {
+        row.addEventListener("click", () => {
+          const id = parseInt(row.getAttribute("data-id"));
+          showPreview(id);
+        });
+      });
+    });
+  </script>
+</body>
+</html>
